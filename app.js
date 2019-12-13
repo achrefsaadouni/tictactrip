@@ -11,7 +11,7 @@ app.use(expressJwt({secret: 'app-super-shared-secret'}).unless({path: ['/api/tok
 
 let USERS = [
     { 'id': 1, 'email': 'foo@bar.com' ,'motsrestant': 80000},
-    { 'id': 2, 'email': 'foo1@bar.com' ,'motsrestant': 300},
+    { 'id': 2, 'email': 'foo1@bar.com' ,'motsrestant': 50},
     { 'id': 3, 'email': 'foo2@bar.com' ,'motsrestant': 80000},
     { 'id': 4, 'email': 'foo3@bar.com' ,'motsrestant': 80000},
 ];
@@ -115,7 +115,6 @@ app.post('/api/justify',   (req,res,next) => {
     const user = USERS.find(user => user.id === getIdFromToken(req));
     const text = req.body.replace('\n','');
     const motsCount = text.trim().split(/\s+/).length;
-    console.log(motsCount);
     if(user.motsrestant >= motsCount){
         const newText = justify(text);
         Editmotsrestant(user,motsCount);
@@ -143,9 +142,10 @@ const normalizePort = val => {
 };
 
 const port = normalizePort(process.env.PORT || "2500");
-app.listen(port, function () {
-    console.log('Server listening on port 4000!');
+const server = app.listen(port, function () {
+    console.log('Server listening on port ',port);
 
     //on fait appel a Resetmotsrestant apres chaque 24 h du lancement du serveur
     setInterval(Resetmotsrestant,86400000);
 });
+module.exports = server ;
