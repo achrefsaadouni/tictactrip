@@ -1,6 +1,6 @@
 # tictactrip
 
-Test : npm jest
+Test : npm test
 
 To run project : node app.js
 
