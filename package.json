@@ -10,11 +10,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "express-jwt": "^5.3.1",
-    "jsonwebtoken": "^8.5.1"
+
   },
   "dependencies": {
     "express": "^4.17.1",
-    "body-parser": "latest"
+    "body-parser": "latest",
+    "express-jwt": "^5.3.1",
+    "jsonwebtoken": "^8.5.1"
   }
 }

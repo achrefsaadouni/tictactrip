@@ -10,10 +10,10 @@ app.use(bodyParser.json());
 app.use(expressJwt({secret: 'app-super-shared-secret'}).unless({path: ['/api/token']}));
 
 let USERS = [
-    { 'id': 1, 'email': 'foo@bar.com' ,'wordsLeft': 80000},
-    { 'id': 2, 'email': 'foo1@bar.com' ,'wordsLeft': 80000},
-    { 'id': 3, 'email': 'foo2@bar.com' ,'wordsLeft': 80000},
-    { 'id': 4, 'email': 'foo3@bar.com' ,'wordsLeft': 80000},
+    { 'id': 1, 'email': 'foo@bar.com' ,'motsrestant': 80000},
+    { 'id': 2, 'email': 'foo1@bar.com' ,'motsrestant': 300},
+    { 'id': 3, 'email': 'foo2@bar.com' ,'motsrestant': 80000},
+    { 'id': 4, 'email': 'foo3@bar.com' ,'motsrestant': 80000},
 ];
 
 
@@ -24,46 +24,46 @@ function getIdFromToken (req){
     return decoded.payload.userID;
 }
 
-function EditWordsLeft(user,wordsUsed){
-    USERS.forEach(function(item, i) { if (item.id === user.id) USERS[i].wordsLeft -= wordsUsed; });
+function Editmotsrestant(user,motsUsed){
+    USERS.forEach(function(item, i) { if (item.id === user.id) USERS[i].motsrestant -= motsUsed; });
 }
 
 
 
-function ResetWordsLeft(){
-    USERS.forEach(function(item, i) { USERS[i].wordsLeft = 80000; });
+function Resetmotsrestant(){
+    USERS.forEach(function(item, i) { USERS[i].motsrestant = 80000; });
 }
 
 
 
 // cette fonction permet de justifer un tableau de mots donnéés pour nous retourner les lignes
-function textJustification(words) {
-    let lines = [],
-        index = 0;
+function justiferTableau(mots) {
+    let lignes = [],
+        indice = 0;
 
-    while (index < words.length) {
-        let count = words[index].length;
-        let last = index + 1;
+    while (indice < mots.length) {
+        let count = mots[indice].length;
+        let last = indice + 1;
 
-        while (last < words.length) {
-            if (words[last].length + count + 1 > 80) break;
-            count += words[last].length + 1;
+        while (last < mots.length) {
+            if (mots[last].length + count + 1 > 80) break;
+            count += mots[last].length + 1;
             last++;
         }
 
-        let line = "";
-        let difference = last - index - 1;
+        let ligne = "";
+        let difference = last - indice - 1;
 
         // si nous sommes sur la dernière ligne ou si le nombre de mots dans la ligne est 1, on quit justifier
 
-        if (last === words.length || difference === 0) {
-            for (let i = index; i < last; i++) {
-                line += words[i] + " ";
+        if (last === mots.length || difference === 0) {
+            for (let i = indice; i < last; i++) {
+                ligne += mots[i] + " ";
             }
 
-            line = line.substr(0, line.length - 1);
-            for (let i = line.length; i < 80; i++) {
-                line += " ";
+            ligne = ligne.substr(0, ligne.length - 1);
+            for (let i = ligne.length; i < 80; i++) {
+                ligne += " ";
             }
         } else {
 
@@ -72,21 +72,21 @@ function textJustification(words) {
             let spaces = (80 - count) / difference;
             let remainder = (80 - count) % difference;
 
-            for (let i = index; i < last; i++) {
-                line += words[i];
+            for (let i = indice; i < last; i++) {
+                ligne += mots[i];
 
                 if (i < last - 1) {
-                    let limit = spaces + (i - index < remainder ? 1 : 0);
+                    let limit = spaces + (i - indice < remainder ? 1 : 0);
                     for (let j = 0; j <= limit; j++) {
-                        line += " ";
+                        ligne += " ";
                     }
                 }
             }
         }
-        lines.push(line);
-        index = last;
+        lignes.push(ligne);
+        indice = last;
     }
-    return lines;
+    return lignes;
 }
 
 
@@ -95,7 +95,7 @@ function justify(text){
     let paragraphes = text.split(/[\r\n\t]+/gm);
     for (let i=0; i < paragraphes.length; i++){
         let motsParagraphe = paragraphes[i].split(" ");
-        let justifiedParagraphe = textJustification(motsParagraphe);
+        let justifiedParagraphe = justiferTableau(motsParagraphe);
         let listText = justifiedParagraphe.join("\n");
         paragraphesJustifier.push(listText);
     }
@@ -114,10 +114,11 @@ app.post('/api/token',   (req,res,next) => {
 app.post('/api/justify',   (req,res,next) => {
     const user = USERS.find(user => user.id === getIdFromToken(req));
     const text = req.body.replace('\n','');
-    const wordsCount = text.trim().split(/\s+/).length;
-    if(user.wordsLeft >= wordsCount){
+    const motsCount = text.trim().split(/\s+/).length;
+    console.log(motsCount);
+    if(user.motsrestant >= motsCount){
         const newText = justify(text);
-        EditWordsLeft(user,wordsCount);
+        Editmotsrestant(user,motsCount);
         return res.send(newText);
     }
     res.sendStatus(402);
@@ -129,6 +130,6 @@ app.post('/api/justify',   (req,res,next) => {
 app.listen(4000, function () {
     console.log('Server listening on port 4000!');
 
-    //on fait appel a ResetWordsLeft apres chaque 24 h du lancement du serveur
-    setInterval(ResetWordsLeft,86400000);
+    //on fait appel a Resetmotsrestant apres chaque 24 h du lancement du serveur
+    setInterval(Resetmotsrestant,86400000);
 });
