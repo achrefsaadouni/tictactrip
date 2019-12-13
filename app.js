@@ -126,8 +126,8 @@ app.post('/api/justify',   (req,res,next) => {
 
 
 
-
-app.listen(4000, function () {
+const port = normalizePort(process.env.PORT || "2500");
+app.listen(port, function () {
     console.log('Server listening on port 4000!');
 
     //on fait appel a Resetmotsrestant apres chaque 24 h du lancement du serveur
